@@ -10,9 +10,10 @@ int main() {
 		if (a%i==0) {
 			printf("\n%lli\n", i);
 			a = a/i;
+		} else {
+			i = i + ((i==2)?1:2);
 		}
 		max = a / i;
-		i = i + ((i==2)?1:2);
 	}
 
 	printf("\n%lli\n", a);
