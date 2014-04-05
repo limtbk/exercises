@@ -40,7 +40,6 @@ struct RBTreeNodeStruct {
 
 struct RBTreeStruct {
     PRBTreeNode root;
-    //    PRBTreeNode nilNode;
     PCompareKeyFunc compareKey;
     PPrintKeyFunc printKey;
     PPrintValueFunc printValue;
@@ -55,34 +54,11 @@ void setValueForKey(PRBTree tree, void *value, void *key);
 void *getValueForKey(PRBTree tree, void *key);
 void removeValueForKey(PRBTree tree, void *key);
 
-/*
- // will became private
- 
- void rotateLeft(PRBTreeNode *tree);
- void rotateRight(PRBTreeNode *tree);
- 
- void bfs(PRBTreeNode *tree, PTreeProc proc);
- void dfs(PRBTreeNode *tree, PTreeProc proc);
- 
- int nodelevel(PRBTreeNode *tree, PRBTreeNode node);
- int childCount(PRBTreeNode *tree);
- int leftChildCount(PRBTreeNode *tree);
- int rightChildCount(PRBTreeNode *tree);
- //void balanceTree(PRBTreeNode *tree);
- 
- 
- */
 void printTree(PRBTree tree);
 void defaultPrintKey(void *key);
 void defaultPrintValue(void *value);
-
 void defaultFreeKey(void *key);
 void defaultFreeValue(void *value);
-
 int defaultCompareKey(void *keyLeft, void *keyRight);
-
-void rotateLeft(PRBTree tree, PRBTreeNode node);
-void rotateRight(PRBTree tree, PRBTreeNode node);
-
 
 #endif
