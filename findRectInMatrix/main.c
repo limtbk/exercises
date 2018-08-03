@@ -10,12 +10,15 @@
 
 #define MIN(a,b) ((a) < (b) ? a : b)
 
+int gc, sc;
+
 typedef struct IntMatrixStruct {
     int *a;
     int m, n;
 } IntMatrix;
 
 int get(IntMatrix matr, int i, int j) {
+    gc++;
     if ((i >= 0) && (j >= 0) && (i < matr.m) && (j < matr.n)) {
         return matr.a[i * matr.n + j];
     }
@@ -23,6 +26,7 @@ int get(IntMatrix matr, int i, int j) {
 }
 
 void set(IntMatrix matr, int i, int j, int v) {
+    sc++;
     if ((i >= 0) && (j >= 0) && (i < matr.m) && (j < matr.n)) {
         matr.a[i * matr.n + j] = v;
     }
@@ -57,14 +61,18 @@ int main(int argc, const char * argv[]) {
 void testMatrix() {
     int arr[] = {0, 1, 1, 1, 1,
                  1, 1, 0, 0, 0,
-                 1, 0, 0, 0, 1,
+                 0, 0, 1, 0, 1,
                  1, 0, 0, 1, 0,
                  1, 0, 1, 0, 0};
     
     IntMatrix mt = {.a = arr, .m = 5, .n = 5};
     
+    gc = 0;
+    sc = 0;
     int result = findRect(mt);
-    printf("%s\n", result?"YES":"NO");
+    printf("\n");
+    print(mt);
+    printf("\n%s\nreads=%i writes=%i\n", result?"YES":"NO", gc, sc);
 }
 
 int calcNonZeros(IntMatrix mt) {
@@ -104,7 +112,7 @@ int findRect(IntMatrix mt) {
     }
     
     IntMatrix mp = new(mt.m, mt.n);
-//    print(mnew);
+//    print(mp);
 
     for (int i = 0; i < mt.m; i++) {
         for (int j = 0; j < mt.n; j++) {
@@ -115,7 +123,7 @@ int findRect(IntMatrix mt) {
                     set(mp, i, j, 1);
                     chkLines(mp, i, j);
 //                    printf("\n");
-//                    print(mnew);
+//                    print(mp);
                 }
             }
         }
