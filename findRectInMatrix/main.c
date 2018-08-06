@@ -9,8 +9,14 @@
 #include <stdlib.h>
 
 #define MIN(a,b) ((a) < (b) ? a : b)
+#define MAX(a,b) ((a) > (b) ? a : b)
 
 int gc, sc;
+
+typedef struct IntListStruct {
+    int *a;
+    int s, p;
+} IntList;
 
 typedef struct IntMatrixStruct {
     int *a;
@@ -37,6 +43,13 @@ IntMatrix new(int m, int n) {
     return (IntMatrix){.a = a, .m = m, .n = n};
 }
 
+void del(IntMatrix mt) {
+    free(mt.a);
+    mt.a = 0;
+    mt.m = 0;
+    mt.n = 0;
+}
+
 void print(IntMatrix mt) {
     for (int i = 0; i < mt.m; i++) {
         for (int j = 0; j < mt.n; j++) {
@@ -48,31 +61,65 @@ void print(IntMatrix mt) {
 }
 
 void testMatrix(void);
+void testChkLines(void);
 
 int findRect(IntMatrix mt);
 
 int calcNonZeros(IntMatrix mt);
 
 int main(int argc, const char * argv[]) {
-    testMatrix();
+    testChkLines();
+//    testMatrix();
     return 0;
 }
 
+
+
+
 void testMatrix() {
-    int arr[] = {0, 1, 1, 1, 1,
-                 1, 1, 0, 0, 0,
-                 0, 0, 1, 0, 1,
-                 1, 0, 0, 1, 0,
-                 1, 0, 1, 0, 0};
+//    int arr[] = {0, 1, 1, 1, 1,
+//                 1, 1, 0, 0, 0,
+//                 1, 0, 1, 0, 0,
+//                 1, 0, 0, 1, 0,
+//                 1, 0, 0, 0, 1,
+//    };
+//    IntMatrix mt = {.a = arr, .m = 5, .n = 5};
+
+//    int arr[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+//                 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+//                 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+//                 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+//                 1, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+//                 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+//                 1, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+//                 1, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+//                 1, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+//                 1, 0, 0, 0, 0, 0, 0, 0, 0, 1
+//    };
+//    IntMatrix mt = {.a = arr, .m = 10, .n = 10};
     
-    IntMatrix mt = {.a = arr, .m = 5, .n = 5};
-    
+    int arr[] = {
+        0, 0, 1, 1, 0, 1, 0, 0, 0, 0,
+        0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+        0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+        1, 0, 1, 0, 0, 0, 0, 0, 1, 1,
+        0, 0, 0, 0, 1, 0, 1, 0, 1, 0,
+        0, 0, 0, 0, 1, 1, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 1, 0, 1, 0, 0,
+        0, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+        1, 1, 0, 1, 1, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0, 0, 1, 1, 0
+    };
+    IntMatrix mt = {.a = arr, .m = 10, .n = 10};
+
+
+
     gc = 0;
     sc = 0;
     int result = findRect(mt);
-    printf("\n");
-    print(mt);
     printf("\n%s\nreads=%i writes=%i\n", result?"YES":"NO", gc, sc);
+    print(mt);
+    printf("\n");
 }
 
 int calcNonZeros(IntMatrix mt) {
@@ -100,6 +147,20 @@ void chkLines(IntMatrix mt, ii, jj) {
             }
         }
     }
+    for (int j = 0; j < mt.n; j++) {
+        if ((j != jj) && (get(mt, ii, j) == 1)) {
+            for (int i = 0; i < mt.m; i++) {
+                if (i != ii) {
+                    if (get(mt, i, jj) == 1) {
+                        set(mt, i, j, -1);
+                    }
+                    if (get(mt, i, j) == 1) {
+                        set(mt, i, jj, -1);
+                    }
+                }
+            }
+        }
+    }
 }
 
 int findRect(IntMatrix mt) {
@@ -107,9 +168,9 @@ int findRect(IntMatrix mt) {
     if (k < 4) {
         return 0;
     }
-    if (k > (mt.m + mt.n + MIN(mt.m, mt.n) - 3)) {
-        return 1;
-    }
+//    if (k > (mt.m + mt.n + MIN(mt.m, mt.n) - 3)) {
+//        return 1;
+//    }
     
     IntMatrix mp = new(mt.m, mt.n);
 //    print(mp);
@@ -132,3 +193,46 @@ int findRect(IntMatrix mt) {
     return 0;
 }
 
+void testChkLines() {
+    
+    IntMatrix res = new(30, 30);
+    
+    for (int ni = 2; ni < 31; ni++) {
+        for (int mi = ni; mi < 31; mi++) {
+            
+            int maxn = 0;
+            
+            for (int l = 0; l < 10000; l++) {
+                IntMatrix mt = new(mi, ni);
+                
+                int n = 0;
+                
+                for (int k = 0; k < 1000; k++) {
+                    int i = arc4random() % mt.m;
+                    int j = arc4random() % mt.n;
+                    if (get(mt, i, j) == 0) {
+                        set(mt, i, j, 1);
+                        chkLines(mt, i, j);
+                        n++;
+//                        printf("\n");
+//                        print(mt);
+                    }
+                }
+                if (maxn < n) {
+                    maxn = n;
+                    printf("\n");
+                    print(mt);
+                    printf("\n%ix%i %i\n", mt.m, mt.n, n);
+                }
+            }
+         
+            set(res, mi-2, ni-2, maxn);
+            set(res, ni-2, mi-2, maxn);
+
+        }
+    }
+    printf("\n");
+    print(res);
+
+
+}
