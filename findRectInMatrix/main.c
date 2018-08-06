@@ -20,7 +20,7 @@ typedef struct IntListStruct {
 
 typedef struct IntMatrixStruct {
     int *a;
-    int m, n;
+    int m, n, c;
 } IntMatrix;
 
 int get(IntMatrix matr, int i, int j) {
@@ -31,16 +31,19 @@ int get(IntMatrix matr, int i, int j) {
     return -1;
 }
 
-void set(IntMatrix matr, int i, int j, int v) {
+void set(IntMatrix *matr, int i, int j, int v) {
     sc++;
-    if ((i >= 0) && (j >= 0) && (i < matr.m) && (j < matr.n)) {
-        matr.a[i * matr.n + j] = v;
+    if ((i >= 0) && (j >= 0) && (i < matr->m) && (j < matr->n)) {
+        if (!matr->a[i * matr->n + j] && v) {
+            matr->c++;
+        }
+        matr->a[i * matr->n + j] = v;
     }
 }
 
 IntMatrix new(int m, int n) {
     int *a = calloc(m * n, sizeof(int));
-    return (IntMatrix){.a = a, .m = m, .n = n};
+    return (IntMatrix){.a = a, .m = m, .n = n, .c = 0};
 }
 
 void del(IntMatrix mt) {
@@ -132,29 +135,29 @@ int calcNonZeros(IntMatrix mt) {
     return result;
 }
 
-void chkLines(IntMatrix mt, ii, jj) {
-    for (int i = 0; i < mt.m; i++) {
-        if ((i != ii) && (get(mt, i, jj) == 1)) {
-            for (int j = 0; j < mt.n; j++) {
+void chkLines(IntMatrix *mt, ii, jj) {
+    for (int i = 0; i < mt->m; i++) {
+        if ((i != ii) && (get(*mt, i, jj) == 1)) {
+            for (int j = 0; j < mt->n; j++) {
                 if (j != jj) {
-                    if (get(mt, ii, j) == 1) {
+                    if (get(*mt, ii, j) == 1) {
                         set(mt, i, j, -1);
                     }
-                    if (get(mt, i, j) == 1) {
+                    if (get(*mt, i, j) == 1) {
                         set(mt, ii, j, -1);
                     }
                 }
             }
         }
     }
-    for (int j = 0; j < mt.n; j++) {
-        if ((j != jj) && (get(mt, ii, j) == 1)) {
-            for (int i = 0; i < mt.m; i++) {
+    for (int j = 0; j < mt->n; j++) {
+        if ((j != jj) && (get(*mt, ii, j) == 1)) {
+            for (int i = 0; i < mt->m; i++) {
                 if (i != ii) {
-                    if (get(mt, i, jj) == 1) {
+                    if (get(*mt, i, jj) == 1) {
                         set(mt, i, j, -1);
                     }
-                    if (get(mt, i, j) == 1) {
+                    if (get(*mt, i, j) == 1) {
                         set(mt, i, jj, -1);
                     }
                 }
@@ -181,8 +184,8 @@ int findRect(IntMatrix mt) {
                 if (get(mp, i, j) != 0) {
                     return 1;
                 } else {
-                    set(mp, i, j, 1);
-                    chkLines(mp, i, j);
+                    set(&mp, i, j, 1);
+                    chkLines(&mp, i, j);
 //                    printf("\n");
 //                    print(mp);
                 }
@@ -207,12 +210,12 @@ void testChkLines() {
                 
                 int n = 0;
                 
-                for (int k = 0; k < 1000; k++) {
+                while (mt.c < ni * mi) {
                     int i = arc4random() % mt.m;
                     int j = arc4random() % mt.n;
                     if (get(mt, i, j) == 0) {
-                        set(mt, i, j, 1);
-                        chkLines(mt, i, j);
+                        set(&mt, i, j, 1);
+                        chkLines(&mt, i, j);
                         n++;
 //                        printf("\n");
 //                        print(mt);
@@ -224,10 +227,11 @@ void testChkLines() {
                     print(mt);
                     printf("\n%ix%i %i\n", mt.m, mt.n, n);
                 }
+                del(mt);
             }
          
-            set(res, mi-2, ni-2, maxn);
-            set(res, ni-2, mi-2, maxn);
+            set(&res, mi-2, ni-2, maxn);
+            set(&res, ni-2, mi-2, maxn);
 
         }
     }
